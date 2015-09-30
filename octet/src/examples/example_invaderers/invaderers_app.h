@@ -236,10 +236,24 @@ namespace octet {
       }
     }
 
-    // use the keyboard to move the ship
-    void move_ship() {
+    
+	void gravity()
+		{
+	 sprites[ship_sprite].translate(0, -0.03);
+	 
+		
+	 if(sprites[ship_sprite].collides_with(sprites[first_border_sprite])) 
+	 {
+		 sprites[ship_sprite].translate(0, 0.03);
+	 }
+	 }
+	// use the keyboard to move the ship
+	void move_ship() {
       const float ship_speed = 0.05f;
-      // left and right arrows
+	  const float jump = 0.6f;
+
+	  
+	  // left and right arrows
       if (is_key_down(key_left)) {
         sprites[ship_sprite].translate(-ship_speed, 0);
         if (sprites[ship_sprite].collides_with(sprites[first_border_sprite+2])) {
@@ -250,10 +264,11 @@ namespace octet {
         if (sprites[ship_sprite].collides_with(sprites[first_border_sprite+3])) {
           sprites[ship_sprite].translate(-ship_speed, 0);
         }
-	  } else if (is_key_down(key_up)) {
-		  sprites[ship_sprite].translate(0, ship_speed);
+	  }
+	  else if (is_key_going_down(key_up)) {
+		  sprites[ship_sprite].translate(0, jump);
 		  if (sprites[ship_sprite].collides_with(sprites[first_border_sprite+1])) {
-			  sprites[ship_sprite].translate(0, -ship_speed);
+			  sprites[ship_sprite].translate(0, -jump);
 		  }
 	  }else if (is_key_down(key_down)) {
 		  sprites[ship_sprite].translate(0, -ship_speed);
@@ -494,8 +509,9 @@ namespace octet {
       if (game_over) {
         return;
       }
+	  gravity();
 
-      move_ship();
+	  move_ship();
 
       fire_missiles();
 
