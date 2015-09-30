@@ -250,8 +250,18 @@ namespace octet {
         if (sprites[ship_sprite].collides_with(sprites[first_border_sprite+3])) {
           sprites[ship_sprite].translate(-ship_speed, 0);
         }
-      }
-    }
+	  } else if (is_key_down(key_up)) {
+		  sprites[ship_sprite].translate(0, ship_speed);
+		  if (sprites[ship_sprite].collides_with(sprites[first_border_sprite+1])) {
+			  sprites[ship_sprite].translate(0, -ship_speed);
+		  }
+	  }else if (is_key_down(key_down)) {
+		  sprites[ship_sprite].translate(0, -ship_speed);
+		  if (sprites[ship_sprite].collides_with(sprites[first_border_sprite])) {
+			  sprites[ship_sprite].translate(0, ship_speed);
+		  }
+	  }
+	}
 
     // fire button (space)
     void fire_missiles() {
