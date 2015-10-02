@@ -244,8 +244,44 @@ namespace octet {
 			sprites[ship_sprite].translate(0, 0.03);
 		}
 	}
+	// moving the guy
+	void move_guy() {
+		const float ship_speed = 0.05f;
+		const float jump = 0.6f;
 
 
+		// left and right arrows
+		if (is_key_down(key_left)) {
+			sprites[ship_sprite].translate(-ship_speed, 0);
+			if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2])) {
+				sprites[ship_sprite].translate(+ship_speed, 0);
+			}
+		}
+		else if (!is_key_going_down(key_up) && is_key_down(key_right)) {
+			sprites[ship_sprite].translate(+ship_speed, 0);
+			if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3])) {
+				sprites[ship_sprite].translate(-ship_speed, 0);
+			}
+		}
+		else if (is_key_going_down(key_up)) {
+			sprites[ship_sprite].translate(0, jump);
+			if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1])) {
+				sprites[ship_sprite].translate(0, -jump);
+			}
+		}
+		else if (is_key_down(key_down)) {
+			sprites[ship_sprite].translate(0, -ship_speed);
+			if (sprites[ship_sprite].collides_with(sprites[first_border_sprite])) {
+				sprites[ship_sprite].translate(0, ship_speed);
+			}
+		}
+		else if (is_key_down(key_up) && is_key_down(key_right)) {
+			sprites[ship_sprite].translate(+ship_speed, jump);
+			if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1])) {
+				sprites[ship_sprite].translate(-ship_speed, -jump);
+			}
+		}
+	}
 
 
 
@@ -514,7 +550,9 @@ namespace octet {
       }
 	  gravity();
 
-      move_ship();
+      //move_ship();
+
+	  move_guy();
 
       fire_missiles();
 
