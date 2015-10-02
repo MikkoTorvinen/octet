@@ -235,6 +235,21 @@ namespace octet {
         sprites[game_over_sprite].translate(-20, 0);
       }
     }
+	void gravity()
+	{
+		sprites[ship_sprite].translate(0, -0.03);
+
+		if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]))
+		{
+			sprites[ship_sprite].translate(0, 0.03);
+		}
+	}
+
+
+
+
+
+
 
     // use the keyboard to move the ship
     void move_ship() {
@@ -497,6 +512,7 @@ namespace octet {
       if (game_over) {
         return;
       }
+	  gravity();
 
       move_ship();
 
