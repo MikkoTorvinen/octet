@@ -143,33 +143,37 @@ namespace octet {
 
     // shader to draw a textured triangle
     texture_shader texture_shader_;
+	int player_sprite;
+	enum {
+		num_sound_sources = 8,
+		num_rows = 5,
+		num_cols = 10,
+		num_missiles = 2,
+		num_bombs = 2,
+		num_borders = 4,
+		num_invaderers = num_rows * num_cols,
 
-    enum {
-      num_sound_sources = 8,
-      num_rows = 5,
-      num_cols = 10,
-      num_missiles = 2,
-      num_bombs = 2,
-      num_borders = 4,
-      num_invaderers = num_rows * num_cols,
+		// sprite definitions
 
-      // sprite definitions
-      ship_sprite = 0,
-      game_over_sprite,
 
-      first_invaderer_sprite,
-      last_invaderer_sprite = first_invaderer_sprite + num_invaderers - 1,
+		ship_sprite = 0,
+		game_over_sprite,
 
-      first_missile_sprite,
-      last_missile_sprite = first_missile_sprite + num_missiles - 1,
+		first_invaderer_sprite,
+		last_invaderer_sprite = first_invaderer_sprite + num_invaderers - 1,
 
-      first_bomb_sprite,
-      last_bomb_sprite = first_bomb_sprite + num_bombs - 1,
+		first_missile_sprite,
+		last_missile_sprite = first_missile_sprite + num_missiles - 1,
 
-      first_border_sprite,
-      last_border_sprite = first_border_sprite + num_borders - 1,
+		first_bomb_sprite,
+		last_bomb_sprite = first_bomb_sprite + num_bombs - 1,
 
-      num_sprites,
+		first_border_sprite,
+		last_border_sprite = first_border_sprite + num_borders - 1,
+
+		guy_sprite,
+      
+		num_sprites
 
     };
 
@@ -230,6 +234,15 @@ namespace octet {
       alSourcei(source, AL_BUFFER, bang);
       alSourcePlay(source);
 
+	  player_sprite = guy_sprite;
+	  
+	  GLuint guy = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/guy.gif");
+	  sprites[guy_sprite].init(guy, 0, -2.75f, 0.25f, 0.25f);
+
+	  
+	  //GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/ship.gif");
+	  //sprites[ship_sprite].init(ship, 1000, 1000, 1000, 1000);
+
       if (--num_lives == 0) {
         game_over = true;
         sprites[game_over_sprite].translate(-20, 0);
@@ -237,11 +250,11 @@ namespace octet {
     }
 	void gravity()
 	{
-		sprites[ship_sprite].translate(0, -0.03);
+		sprites[guy_sprite].translate(0, -0.03);
 
-		if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]))
+		if (sprites[guy_sprite].collides_with(sprites[first_border_sprite]))
 		{
-			sprites[ship_sprite].translate(0, 0.03);
+			sprites[guy_sprite].translate(0, 0.03);
 		}
 	}
 	// moving the guy
@@ -251,68 +264,70 @@ namespace octet {
 
 
 		// left and right arrows
-		if (is_key_down(key_left)) {
-			sprites[ship_sprite].translate(-ship_speed, 0);
-			if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2])) {
-				sprites[ship_sprite].translate(+ship_speed, 0);
+		if (!is_key_going_down(key_up) && is_key_down(key_left)) {
+			sprites[player_sprite].translate(-ship_speed, 0);
+			if (sprites[player_sprite].collides_with(sprites[first_border_sprite + 2])) {
+				sprites[player_sprite].translate(+ship_speed, 0);
 			}
 		}
 		else if (!is_key_going_down(key_up) && is_key_down(key_right)) {
-			sprites[ship_sprite].translate(+ship_speed, 0);
-			if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3])) {
-				sprites[ship_sprite].translate(-ship_speed, 0);
+			sprites[player_sprite].translate(+ship_speed, 0);
+			if (sprites[player_sprite].collides_with(sprites[first_border_sprite + 3])) {
+				sprites[player_sprite].translate(-ship_speed, 0);
 			}
 		}
 		else if (is_key_going_down(key_up)) {
-			sprites[ship_sprite].translate(0, jump);
-			if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1])) {
-				sprites[ship_sprite].translate(0, -jump);
+			sprites[player_sprite].translate(0, jump);
+			if (sprites[player_sprite].collides_with(sprites[first_border_sprite + 1])) {
+				sprites[player_sprite].translate(0, -jump);
 			}
 		}
 		else if (is_key_down(key_down)) {
-			sprites[ship_sprite].translate(0, -ship_speed);
-			if (sprites[ship_sprite].collides_with(sprites[first_border_sprite])) {
-				sprites[ship_sprite].translate(0, ship_speed);
+			sprites[player_sprite].translate(0, -ship_speed);
+			if (sprites[player_sprite].collides_with(sprites[first_border_sprite])) {
+				sprites[player_sprite].translate(0, ship_speed);
 			}
 		}
 		else if (is_key_down(key_up) && is_key_down(key_right)) {
-			sprites[ship_sprite].translate(+ship_speed, jump);
-			if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1])) {
-				sprites[ship_sprite].translate(-ship_speed, -jump);
+			sprites[player_sprite].translate(+ship_speed, jump);
+			if (sprites[player_sprite].collides_with(sprites[first_border_sprite + 1])) {
+				sprites[player_sprite].translate(-ship_speed, -jump);
+			}
+		}
+		else if (is_key_down(key_up) && is_key_down(key_left)) {
+			sprites[player_sprite].translate(-ship_speed, jump);
+			if (sprites[player_sprite].collides_with(sprites[first_border_sprite + 2])) {
+				sprites[player_sprite].translate(+ship_speed, -jump);
 			}
 		}
 	}
 
-
-
-
-
-    // use the keyboard to move the ship
+	// use the keyboard to move the ship
     void move_ship() {
       const float ship_speed = 0.05f;
       // left and right arrows
       if (is_key_down(key_left)) {
-        sprites[ship_sprite].translate(-ship_speed, 0);
-        if (sprites[ship_sprite].collides_with(sprites[first_border_sprite+2])) {
-          sprites[ship_sprite].translate(+ship_speed, 0);
+        sprites[player_sprite].translate(-ship_speed, 0);
+        if (sprites[player_sprite].collides_with(sprites[first_border_sprite+2])) {
+          sprites[player_sprite].translate(+ship_speed, 0);
         }
       } else if (is_key_down(key_right)) {
-        sprites[ship_sprite].translate(+ship_speed, 0);
-        if (sprites[ship_sprite].collides_with(sprites[first_border_sprite+3])) {
-          sprites[ship_sprite].translate(-ship_speed, 0);
+        sprites[player_sprite].translate(+ship_speed, 0);
+        if (sprites[player_sprite].collides_with(sprites[first_border_sprite+3])) {
+          sprites[player_sprite].translate(-ship_speed, 0);
         }
       }
 	  //up and down arrows
 	  else if (is_key_down(key_up)) {
-		  sprites[ship_sprite].translate(0, +ship_speed);
-		  if (sprites[ship_sprite].collides_with(sprites[first_border_sprite +1])) {
-			  sprites[ship_sprite].translate(0, -ship_speed);
+		  sprites[player_sprite].translate(0, +ship_speed);
+		  if (sprites[player_sprite].collides_with(sprites[first_border_sprite +1])) {
+			  sprites[player_sprite].translate(0, -ship_speed);
 		  }
 	  }
 	  else if (is_key_down(key_down)) {
-		  sprites[ship_sprite].translate(0, -ship_speed);
-		  if (sprites[ship_sprite].collides_with(sprites[first_border_sprite])) {
-			  sprites[ship_sprite].translate(0, +ship_speed);
+		  sprites[player_sprite].translate(0, -ship_speed);
+		  if (sprites[player_sprite].collides_with(sprites[first_border_sprite])) {
+			  sprites[player_sprite].translate(0, +ship_speed);
 		  }
 	  }
 	}
@@ -325,7 +340,7 @@ namespace octet {
         // find a missile
         for (int i = 0; i != num_missiles; ++i) {
           if (!sprites[first_missile_sprite+i].is_enabled()) {
-            sprites[first_missile_sprite+i].set_relative(sprites[ship_sprite], 0, 0.5f);
+            sprites[first_missile_sprite+i].set_relative(sprites[player_sprite], 0, 0.5f);
             sprites[first_missile_sprite+i].is_enabled() = true;
             missiles_disabled = 5;
             ALuint source = get_sound_source();
@@ -343,11 +358,23 @@ namespace octet {
         --bombs_disabled;
       } else {
         // find an invaderer
-        sprite &ship = sprites[ship_sprite];
+        sprite &ship = sprites[player_sprite];
         for (int j = randomizer.get(0, num_invaderers); j < num_invaderers; ++j) {
           sprite &invaderer = sprites[first_invaderer_sprite+j];
-          if (invaderer.is_enabled() && invaderer.is_above(ship, 0.3f)) {
-            // find a bomb
+          if (invaderer.is_enabled() && invaderer.is_above(ship, 0.3f)) 
+		  {
+			  //sprite &guy = sprites[guy_sprite];
+		      //for (int j = randomizer.get(0, num_invaderers); j < num_invaderers; ++j) {
+			  // &invaderer = sprites[first_invaderer_sprite + j];
+		  //invaderer.is_above(guy, 0.3f);
+		  
+		  
+		  
+		  
+		  
+		  
+            
+		    // find a bomb
             for (int i = 0; i != num_bombs; ++i) {
               if (!sprites[first_bomb_sprite+i].is_enabled()) {
                 sprites[first_bomb_sprite+i].set_relative(invaderer, 0, -0.25f);
@@ -488,7 +515,13 @@ namespace octet {
 
       font_texture = resource_dict::get_texture_handle(GL_RGBA, "assets/big_0.gif");
 
-      GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/ship.gif");
+	  //Create guy
+	  player_sprite = ship_sprite;
+	  
+	  GLuint guy = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/guy.gif");
+	  sprites[guy_sprite].init(guy, 1000, 1000, 1000, 1000);
+	 
+	  GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/ship.gif");
       sprites[ship_sprite].init(ship, 0, -2.75f, 0.25f, 0.25f);
 
       GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
@@ -550,7 +583,7 @@ namespace octet {
       }
 	  gravity();
 
-      //move_ship();
+      move_ship();
 
 	  move_guy();
 
