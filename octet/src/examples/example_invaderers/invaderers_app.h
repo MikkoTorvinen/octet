@@ -48,6 +48,10 @@ namespace octet {
       enabled = true;
     }
 
+	void set_texture(int _texture) {               //THIS IS FOR CHANGING THE TEXTURES
+		texture = _texture;
+	}
+
     void render(texture_shader &shader, mat4t &cameraToWorld) {
       // invisible sprite... used for gameplay.
       if (!texture) return;
@@ -210,6 +214,10 @@ namespace octet {
     // information for our text
     bitmap_font font;
 
+	// is ship or is human
+	int player_sprite_nr = 0;
+	GLuint player_textures[2] = {};           // INITIALISING ARRAY OF TEXTURES
+
     ALuint get_sound_source() { return sources[cur_source++ % num_sound_sources]; }
 
     // called when we hit an enemy
@@ -234,10 +242,17 @@ namespace octet {
       alSourcei(source, AL_BUFFER, bang);
       alSourcePlay(source);
 
-	  player_sprite = guy_sprite;
+	  //player_sprite = guy_sprite;
+
+	  sprites[ship_sprite].set_texture(player_textures[++player_sprite_nr]);
 	  
-	  GLuint guy = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/guy.gif");
-	  sprites[guy_sprite].init(guy, 0, -2.75f, 0.25f, 0.25f);
+	  
+	  
+	  //sprites[guy_sprite].init(guy, 0, -2.75f, 0.25f, 0.25f);
+		  
+		  //set_relative(sprites[ship_sprite], 0, 0);
+
+	  //init(guy, 0, -2.75f, 0.25f, 0.25f);
 
 	  
 	  //GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/ship.gif");
@@ -248,13 +263,27 @@ namespace octet {
         sprites[game_over_sprite].translate(-20, 0);
       }
     }
+	void pullup()
+	{
+
+
+
+	}
+	
+	
+	
+	
+	
+	
 	void gravity()
 	{
-		sprites[guy_sprite].translate(0, -0.03);
+		if (player_sprite_nr == 0) {
+			sprites[ship_sprite].translate(0, -0.03);
 
-		if (sprites[guy_sprite].collides_with(sprites[first_border_sprite]))
-		{
-			sprites[guy_sprite].translate(0, 0.03);
+			if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]))
+			{
+				sprites[ship_sprite].translate(0, 0.03);
+			}
 		}
 	}
 	// moving the guy
@@ -427,7 +456,7 @@ namespace octet {
         sprite &bomb = sprites[first_bomb_sprite+i];
         if (bomb.is_enabled()) {
           bomb.translate(0, -bomb_speed);
-          if (bomb.collides_with(sprites[ship_sprite])) {
+          if (bomb.collides_with(sprites[player_sprite])) {
             bomb.is_enabled() = false;
             bomb.translate(20, 0);
             bombs_disabled = 50;
@@ -522,6 +551,8 @@ namespace octet {
 	  sprites[guy_sprite].init(guy, 1000, 1000, 1000, 1000);
 	 
 	  GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/ship.gif");
+	  player_textures[0] = ship;
+	  player_textures[1] = guy;
       sprites[ship_sprite].init(ship, 0, -2.75f, 0.25f, 0.25f);
 
       GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
