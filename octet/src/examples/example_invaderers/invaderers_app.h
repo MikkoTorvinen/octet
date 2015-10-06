@@ -175,7 +175,7 @@ namespace octet {
 		first_border_sprite,
 		last_border_sprite = first_border_sprite + num_borders - 1,
 
-		guy_sprite,
+		dog_sprite,
       
 		num_sprites
 
@@ -216,7 +216,7 @@ namespace octet {
 
 	// is ship or is human
 	int player_sprite_nr = 0;
-	GLuint player_textures[2] = {};           // INITIALISING ARRAY OF TEXTURES
+	GLuint player_textures[3] = {};           // INITIALISING ARRAY OF TEXTURES
 
     ALuint get_sound_source() { return sources[cur_source++ % num_sound_sources]; }
 
@@ -508,15 +508,14 @@ namespace octet {
 
       font_texture = resource_dict::get_texture_handle(GL_RGBA, "assets/big_0.gif");
 
-	  //Create guy
-	  //player_sprite = ship_sprite;
 	  
-	  GLuint guy = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/guy.gif");
-	  sprites[guy_sprite].init(guy, 1000, 1000, 1000, 1000);
+	  
+	  GLuint dog = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/dog.gif");
+	  sprites[dog_sprite].init(dog, 1000, 1000, 1000, 1000);
 	 
 	  GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/ship.gif");
 	  player_textures[0] = ship;
-	  player_textures[1] = guy;
+	  player_textures[1] = dog;
       sprites[ship_sprite].init(ship, 0, -2.75f, 0.25f, 0.25f);
 
       GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
