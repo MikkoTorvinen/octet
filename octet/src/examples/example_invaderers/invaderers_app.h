@@ -163,6 +163,7 @@ namespace octet {
 		ship_sprite = 0,
 		game_over_sprite,
 
+		invader_sprite,
 		first_invaderer_sprite,
 		last_invaderer_sprite = first_invaderer_sprite + num_invaderers - 1,
 
@@ -174,9 +175,11 @@ namespace octet {
 
 		first_border_sprite,
 		last_border_sprite = first_border_sprite + num_borders - 1,
-
+		
 		dog_sprite,
-      
+		
+		ghost_sprite,
+
 		num_sprites
 
     };
@@ -508,15 +511,19 @@ namespace octet {
 
       font_texture = resource_dict::get_texture_handle(GL_RGBA, "assets/big_0.gif");
 
-	  
+	  GLuint ghost = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/ghost.gif");
+	  sprites[ghost_sprite].init(ghost, 1000, 1000, 1000, 1000);
 	  
 	  GLuint dog = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/dog.gif");
 	  sprites[dog_sprite].init(dog, 1000, 1000, 1000, 1000);
 	 
-	  GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/ship.gif");
+	  GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/guy.gif");
+	  sprites[ship_sprite].init(ship, 0, -2.75f, 0.25f, 0.25f);
+	  
 	  player_textures[0] = ship;
 	  player_textures[1] = dog;
-      sprites[ship_sprite].init(ship, 0, -2.75f, 0.25f, 0.25f);
+	  player_textures[2] = ghost;
+	 
 
       GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
       sprites[game_over_sprite].init(GameOver, 20, 0, 3, 1.5f);
