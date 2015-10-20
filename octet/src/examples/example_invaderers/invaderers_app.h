@@ -229,7 +229,9 @@ namespace octet {
       alSourcei(source, AL_BUFFER, bang);
       alSourcePlay(source);
 
-	  sprites[ship_sprite].set_texture(player_textures[--player_sprite_nr]);  //MOVING DOWN
+
+	  if (player_sprite_nr > 0)  
+	  sprites[ship_sprite].set_texture(player_textures[--player_sprite_nr]);  //BACK IN HUMAN FORM
 
       live_invaderers--;
       score++;
