@@ -577,7 +577,7 @@ namespace octet {
       bombs_disabled = 50;
       invader_velocity = 0.01f;
       live_invaderers = num_invaderers;
-      num_lives = 3;
+      //num_lives = 3;
       game_over = false;
       score = 0;
     }
@@ -634,8 +634,11 @@ namespace octet {
       }
 
       char score_text[32];
-      sprintf(score_text, "score: %d   lives: %d\n", score, num_lives);
-      draw_text(texture_shader_, -1.75f, 2, 1.0f/256, score_text);
+      sprintf(score_text, "score: %d  \n", score);
+      
+	  
+	  //ORIGINAL sprintf(score_text, "score: %d   lives: %d\n", score, num_lives);
+	  draw_text(texture_shader_, -1.75f, 2, 1.0f/256, score_text);
 
       // move the listener with the camera
       vec4 &cpos = cameraToWorld.w();
