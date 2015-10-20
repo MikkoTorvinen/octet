@@ -150,7 +150,7 @@ namespace octet {
 
 	enum {
 		num_sound_sources = 8,
-		num_rows = 5,
+		num_rows = 2,
 		num_cols = 10,
 		num_missiles = 2,
 		num_bombs = 2,
@@ -228,6 +228,8 @@ namespace octet {
       ALuint source = get_sound_source();
       alSourcei(source, AL_BUFFER, bang);
       alSourcePlay(source);
+
+	  sprites[ship_sprite].set_texture(player_textures[--player_sprite_nr]);  //MOVING DOWN
 
       live_invaderers--;
       score++;
