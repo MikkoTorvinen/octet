@@ -140,6 +140,7 @@ namespace octet {
     }
   };
 
+  
   class invaderers_app : public octet::app {
     // Matrix to transform points in our camera space to the world.
     // This lets us move our camera
@@ -150,22 +151,15 @@ namespace octet {
 
 	enum {
 		num_sound_sources = 8,
-		num_rows = 2,
-		num_cols = 10,
 		num_missiles = 2,
-		num_bombs = 2,
+		num_bombs = 8,
 		num_borders = 4,
-		num_invaderers = num_rows * num_cols,
 
 		// sprite definitions
 
 
 		ship_sprite = 0,
 		game_over_sprite,
-
-		invader_sprite,
-		first_invaderer_sprite,
-		last_invaderer_sprite = first_invaderer_sprite + num_invaderers - 1,
 
 		first_missile_sprite,
 		last_missile_sprite = first_missile_sprite + num_missiles - 1,
@@ -207,19 +201,32 @@ namespace octet {
 
     // big array of sprites
     sprite sprites[num_sprites];
+	dynarray<sprite> inv_sprites;
 
     // random number generator
     class random randomizer;
 
-    // a texture for our text
+   
+ // a texture for our text
     GLuint font_texture;
 
     // information for our text
     bitmap_font font;
 
+	// stores current level
+	int current_level = 0;
+	static const int MAX_NR_LVL = 2;
+
 	// is ship or is human
 	int player_sprite_nr = 0;
 	GLuint player_textures[3] = {};           // INITIALISING ARRAY OF TEXTURES
+
+	struct inv_position {
+		int x;
+		int y;
+	};
+
+	dynarray<inv_position> inv_formation;
 
     ALuint get_sound_source() { return sources[cur_source++ % num_sound_sources]; }
 
@@ -360,8 +367,8 @@ namespace octet {
       } else {
         // find an invaderer
         sprite &ship = sprites[ship_sprite];
-        for (int j = randomizer.get(0, num_invaderers); j < num_invaderers; ++j) {
-          sprite &invaderer = sprites[first_invaderer_sprite+j];
+        for (int j = randomizer.get(0, inv_sprites.size()); j < inv_sprites.size(); ++j) {
+          sprite &invaderer = inv_sprites[j];
           if (invaderer.is_enabled() && invaderer.is_above(ship, 0.3f)) 
 		  {
 			  //sprite &guy = sprites[guy_sprite];
@@ -400,8 +407,8 @@ namespace octet {
         sprite &missile = sprites[first_missile_sprite+i];
         if (missile.is_enabled()) {
           missile.translate(0, missile_speed);
-          for (int j = 0; j != num_invaderers; ++j) {
-            sprite &invaderer = sprites[first_invaderer_sprite+j];
+          for (int j = 0; j != inv_sprites.size(); ++j) {
+            sprite &invaderer = inv_sprites[j];
             if (invaderer.is_enabled() && missile.collides_with(invaderer)) {
               invaderer.is_enabled() = false;
               invaderer.translate(20, 0);
@@ -446,8 +453,8 @@ namespace octet {
 
     // move the array of enemies
     void move_invaders(float dx, float dy) {
-      for (int j = 0; j != num_invaderers; ++j) {
-        sprite &invaderer = sprites[first_invaderer_sprite+j];
+      for (int j = 0; j != inv_sprites.size(); ++j) {
+		  sprite &invaderer = inv_sprites[j];
         if (invaderer.is_enabled()) {
           invaderer.translate(dx, dy);
         }
@@ -456,8 +463,8 @@ namespace octet {
 
     // check if any invaders hit the sides.
     bool invaders_collide(sprite &border) {
-      for (int j = 0; j != num_invaderers; ++j) {
-        sprite &invaderer = sprites[first_invaderer_sprite+j];
+      for (int j = 0; j != inv_sprites.size(); ++j) {
+        sprite &invaderer = inv_sprites[j];
         if (invaderer.is_enabled() && invaderer.collides_with(border)) {
           return true;
         }
@@ -533,22 +540,14 @@ namespace octet {
       GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
       sprites[game_over_sprite].init(GameOver, 20, 0, 3, 1.5f);
 
-      GLuint invaderer = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/invaderer.gif");
-      for (int j = 0; j != num_rows; ++j) {
-        for (int i = 0; i != num_cols; ++i) {
-          assert(first_invaderer_sprite + i + j*num_cols <= last_invaderer_sprite);
-          sprites[first_invaderer_sprite + i + j*num_cols].init(
-            invaderer, ((float)i - num_cols * 0.5f) * 0.5f, 2.50f - ((float)j * 0.5f), 0.25f, 0.25f
-          );
-        }
-      }
-
       // set the border to white for clarity
       GLuint white = resource_dict::get_texture_handle(GL_RGB, "#ffffff");
       sprites[first_border_sprite+0].init(white, 0, -3, 6, 0.2f);
       sprites[first_border_sprite+1].init(white, 0,  3, 6, 0.2f);
       sprites[first_border_sprite+2].init(white, -3, 0, 0.2f, 6);
       sprites[first_border_sprite+3].init(white, 3,  0, 0.2f, 6);
+
+	  load_next_level();
 
       // use the missile texture
       GLuint missile = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/missile.gif");
@@ -575,8 +574,9 @@ namespace octet {
       // sundry counters and game state.
       missiles_disabled = 0;
       bombs_disabled = 50;
-      invader_velocity = 0.01f;
-      live_invaderers = num_invaderers;
+      invader_velocity = 0.06f;
+
+      live_invaderers = inv_sprites.size();
       //num_lives = 3;
       game_over = false;
       score = 0;
@@ -612,6 +612,11 @@ namespace octet {
 
     // this is called to draw the world
     void draw_world(int x, int y, int w, int h) {
+
+		if (is_key_going_down(key_rmb)) {
+			load_next_level();
+		}
+
       simulate();
 
       // set a viewport - includes whole window area
@@ -628,7 +633,11 @@ namespace octet {
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-      // draw all the sprites
+	  for (int i = 0; i < inv_sprites.size(); ++i) {
+		  inv_sprites[i].render(texture_shader_, cameraToWorld);
+	  }
+
+      // draw all of andy's sprites
       for (int i = 0; i != num_sprites; ++i) {
         sprites[i].render(texture_shader_, cameraToWorld);
       }
@@ -644,5 +653,59 @@ namespace octet {
       vec4 &cpos = cameraToWorld.w();
       alListener3f(AL_POSITION, cpos.x(), cpos.y(), cpos.z());
     }
+
+	void read_file() {
+
+		std::ifstream file("inv_formation"+ std::to_string(current_level)+".csv");
+
+		inv_formation.resize(0);
+
+		char buffer[2048];
+		int i = 0;
+		while (!file.eof()) {
+			file.getline(buffer, sizeof(buffer));
+			
+			char *b = buffer;
+			for (int j = 0;; ++j) {
+				char *e = b;
+				while (*e != 0 && *e != ',') {
+					++e;
+				}
+
+				if (std::atoi(b) == 1) {
+					inv_position p;
+					p.x = j;
+					p.y = i;
+					inv_formation.push_back(p);
+				}
+
+				if (*e != ',') {
+					break;
+				}
+				b = e + 1;
+			}
+			++i;
+		}
+	}
+
+	void load_next_level() {
+		++current_level;
+		if (current_level > MAX_NR_LVL) {
+			return;
+			// TODO: show you win screen
+		}
+
+		read_file();
+		inv_sprites.resize(0);
+
+		GLuint invaderer = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/invaderer.gif");
+		for (int i = 0; i < inv_formation.size(); ++i) {
+			sprite inv;
+			inv.init(invaderer, -1.5f + 0.66f*inv_formation[i].x, 2 - 0.5f*inv_formation[i].y, 0.25f, 0.25f);
+			inv_sprites.push_back(inv);
+		}
+
+	}
+
   };
 }
