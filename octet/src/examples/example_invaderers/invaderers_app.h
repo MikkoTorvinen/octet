@@ -102,6 +102,35 @@ namespace octet {
       glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
+	void render(mikko_shader &shader, mat4t &cameraToWorld, int v_width, int v_height) {
+
+		mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
+
+		shader.render(modelToProjection, vec2(v_width, v_height));
+
+		float vertices[] = {
+			-halfWidth, -halfHeight, 0,
+			halfWidth, -halfHeight, 0,
+			halfWidth,  halfHeight, 0,
+			-halfWidth,  halfHeight, 0,
+		};
+
+		glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)vertices);
+		glEnableVertexAttribArray(attribute_pos);
+
+		static const float uvs[] = {
+			0,  0,
+			1,  0,
+			1,  1,
+			0,  1,
+		};
+
+		glVertexAttribPointer(attribute_uv, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)uvs);
+		glEnableVertexAttribArray(attribute_uv);
+
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	}
+
     // move the object
     void translate(float x, float y) {
       modelToWorld.translate(x, y, 0);
@@ -148,6 +177,7 @@ namespace octet {
 
     // shader to draw a textured triangle
     texture_shader texture_shader_;
+	mikko_shader mikko_shader_;
 
 	enum {
 		num_sound_sources = 8,
@@ -202,6 +232,7 @@ namespace octet {
     // big array of sprites
     sprite sprites[num_sprites];
 	dynarray<sprite> inv_sprites;
+	sprite background_sprite;
 
     // random number generator
     class random randomizer;
@@ -516,6 +547,7 @@ namespace octet {
     void app_init() {
       // set up the shader
       texture_shader_.init();
+	  mikko_shader_.init();
 
       // set up the matrices with a camera 5 units from the origin
       cameraToWorld.loadIdentity();
@@ -546,6 +578,7 @@ namespace octet {
       sprites[first_border_sprite+1].init(white, 0,  3, 6, 0.2f);
       sprites[first_border_sprite+2].init(white, -3, 0, 0.2f, 6);
       sprites[first_border_sprite+3].init(white, 3,  0, 0.2f, 6);
+	  background_sprite.init(white, 0, 0, 6, 6);
 
 	  load_next_level();
 
@@ -633,6 +666,9 @@ namespace octet {
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	  // draw background
+	  background_sprite.render(mikko_shader_, cameraToWorld, w, h);
+	  
 	  for (int i = 0; i < inv_sprites.size(); ++i) {
 		  inv_sprites[i].render(texture_shader_, cameraToWorld);
 	  }
@@ -644,7 +680,6 @@ namespace octet {
 
       char score_text[32];
       sprintf(score_text, "score: %d  \n", score);
-      
 	  
 	  //ORIGINAL sprintf(score_text, "score: %d   lives: %d\n", score, num_lives);
 	  draw_text(texture_shader_, -1.75f, 2, 1.0f/256, score_text);

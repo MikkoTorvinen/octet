@@ -216,6 +216,7 @@
     <ClInclude Include="..\..\shaders\shaders.h" />
     <ClInclude Include="..\..\shaders\texture_shader.h" />
     <ClInclude Include="example_invaderers.h" />
+    <ClInclude Include="mikko_shader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\resources\mesh_builder.inl" />
