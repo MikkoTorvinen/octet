@@ -291,8 +291,7 @@ namespace octet {
 	  sprites[ship_sprite].set_texture(player_textures[++player_sprite_nr]);      //MOVING UP IN ARRAY
 	  
 
-      if //(--num_lives == 0) {
-		  (player_sprite_nr == 3){                                            //TRYING TO MAKE NEW GAME OVER
+      if (player_sprite_nr == 3){                                            //NEW GAME OVER
 		  game_over = true;
         sprites[game_over_sprite].translate(-20, 0);
       }
@@ -309,11 +308,6 @@ namespace octet {
 		}
 	}
 	}
-	
-	
-	
-	
-	
 	
 	void gravity()
 	{
