@@ -723,6 +723,8 @@ namespace octet {
 		++current_level;
 		if (current_level > MAX_NR_LVL) {
 			return;
+			game_over = true;
+			sprites[game_over_sprite].translate(-20, 0);
 			// TODO: show you win screen
 		}
 
