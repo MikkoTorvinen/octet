@@ -275,10 +275,11 @@ namespace octet {
       score++;
       if (live_invaderers == 4) {
         invader_velocity *= 4;
-      } else if (live_invaderers == 0) {
-        game_over = true;
-        sprites[game_over_sprite].translate(-20, 0);
-      }
+      } 
+	  //else if (live_invaderers == 0) {
+        //game_over = true;
+        //sprites[game_over_sprite].translate(-20, 0);
+     // }
     }
 
     // called when we are hit
@@ -604,7 +605,6 @@ namespace octet {
       invader_velocity = 0.06f;
 
       live_invaderers = inv_sprites.size();
-      //num_lives = 3;
       game_over = false;
       score = 0;
     }
@@ -639,10 +639,12 @@ namespace octet {
 
     // this is called to draw the world
     void draw_world(int x, int y, int w, int h) {
-
-		if (is_key_going_down(key_rmb)) {
+		if (live_invaderers == 0) {
 			load_next_level();
 		}
+		//if (is_key_going_down(key_rmb)) {
+		//	load_next_level();
+		//}
 
       simulate();
 
