@@ -674,8 +674,8 @@ namespace octet {
         sprites[i].render(texture_shader_, cameraToWorld);
       }
 
-      char score_text[32];
-      sprintf(score_text, "score: %d  \n", score);
+      char score_text[64];
+      sprintf(score_text, "Apples crushed: %d  \n", score);
 	  
 	  //ORIGINAL sprintf(score_text, "score: %d   lives: %d\n", score, num_lives);
 	  draw_text(texture_shader_, -1.75f, 2, 1.0f/256, score_text);
