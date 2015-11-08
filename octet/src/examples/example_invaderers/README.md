@@ -3,30 +3,46 @@ CANDY CRUSHER DIPTYCH
 First, we make changes to player movements by adding options for upward and downward movement. The character’s movements are controlled by the following script. 
 
 if (is_key_going_down(key_up)) {
-    sprites[ship_sprite].translate(0, jump);
-	if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1])) {
-	    sprites[ship_sprite].translate(0, -jump);
+    
+sprites[ship_sprite].translate(0, jump);
+	
+if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1])) {
+	   
+ sprites[ship_sprite].translate(0, -jump);
 
 The movement speed is determined by “void move_ship” function. For the collision part we have to add a negative ship speed. Once the ship_sprite will hit the border sprite the negative translation value is zeroing out the movement speed, so the character won't walk out from the scene.
 Jump function is just a faster translation value in simulation time.  For making that work in game, we need to create a force that will pull the character back to the “ground”.
 We add gravity by affecting the character sprite with continuous negative translate value in y-axis. When character sprite will hit the bottom border we will have opposite force for affecting player sprite, so it will zero out the gravity effect.
 We need to add gravity in our simulation as well, to call the function in every frame so it will have an effect in game.
-3.
+
 Next, we are creating a new character. The goal is to have a different character each time the player will be hit by the enemy and will be closer to a death and game over. Player has a change to transform back to full health, by shooting the enemies.
 First, we load sprites into our program and translate them away from our scene.
-	GLuint ghost = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/ghost.gif");
-	  sprites[ghost_sprite].init(ghost, 1000, 1000, 1000, 1000);
+	
+GLuint ghost = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/ghost.gif");
+	  
+sprites[ghost_sprite].init(ghost, 1000, 1000, 1000, 1000);
+
 Then we set up them in our texture array. In this case ghost will be last in array
-	player_textures[2] = ghost;
+	
+player_textures[2] = ghost;
 
 We need to declare new sprites in our sprite definitions by adding a line in our enum function
-	ghost_sprite,
+	
+ghost_sprite,
+
 We initialize array of textures by
-	int player_sprite_nr = 0
+	
+int player_sprite_nr = 0
+
 GLuint player_textures[3] = {};
+
 For changing the textures we write the following:
-	void set_texture(int _texture) {
-        	texture = _texture; }
+	
+void set_texture(int _texture) {
+        	
+texture = _texture; }
+
+
 For character texture changes to take effect we write the following line in on_hit_ship function.
 	sprites[ship_sprite].set_texture(player_textures[++player_sprite_nr]);
 This function will be called every time we are hit by enemy and it will move one up in our array of textures.
