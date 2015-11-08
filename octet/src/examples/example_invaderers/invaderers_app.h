@@ -274,7 +274,7 @@ namespace octet {
       live_invaderers--;
       score++;
       if (live_invaderers == 4) {
-        invader_velocity *= 1;
+        invader_velocity *= 4;
       } 
 	  //else if (live_invaderers == 0) {
         //game_over = true;

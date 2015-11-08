@@ -1,6 +1,7 @@
 CANDY CRUSHER DIPTYCH
 
 First, we make changes to player movements by adding options for upward and downward movement. The character’s movements are controlled by the following script. 
+
 if (is_key_going_down(key_up)) {
     sprites[ship_sprite].translate(0, jump);
 	if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1])) {
