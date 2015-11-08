@@ -124,7 +124,7 @@ while (*e != 0 && *e != ',') {
 
 ++e;}
 
-At this point b stores all the characeters for an element of the csv file, but we have to transformed into a number. We are suing atoi method to convert the char array to an int, further we are comparing the resulting number to see if it is the value 1 (which we have designated as being the identifier for creating an invaderer). If this is the case, then we store the position (column and row) of the element in the csv file in the inv_formation array as the x and y coordinates of the invaderer.
+At this point b stores all the characters for an element of the csv file, but we have to transform it into a number. We are using atoi method to convert the char array to an int, further we are comparing the resulting number to see if it is the value 1 (which we have designated as being the identifier for creating an invaderer). If this is the case, then we store the position (column and row) of the element in the CSV file in the inv_formation array as the x and y coordinates of the invaderer.
 
 if (std::atoi(b) == 1) {
 
@@ -183,4 +183,4 @@ vec3 vColor = vec3(0.6, 0.1, 0.3) * (1-pos.y);
 gl_FragColor = vec4(vColor, 1.0); } );
 
 	
-We creted a sprite for the background which is coloured with a custom shader. The vertex shader part is just passing through, not modifying the transformation of the vertices, but the fragment shader makes use of the y coordinate of the current pixel to create a gradient effect in the colouring. This is done by multiplying the RGB values of the final colour of the pixel by the normalized y value. We have to normalize the y axis values because colours for the fragment shader are in the range [0, 1].
+We create a sprite for the background which is colored with a custom shader. The vertex shader part is just passing through, not modifying the transformation of the vertices. The fragment shader makes use of the y coordinate of the current pixel to create a gradient effect in the coloring. This is done by multiplying the RGB values of the final color of the pixel by the normalized y value. We have to normalize the y axis values because colors for the fragment shader are in the range [0, 1].
