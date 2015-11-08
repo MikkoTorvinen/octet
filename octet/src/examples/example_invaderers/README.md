@@ -3,12 +3,9 @@ CANDY CRUSHER DIPTYCH
 First, we make changes to player movements by adding options for upward and downward movement. The character’s movements are controlled by the following script. 
 
 if (is_key_going_down(key_up)) {
-    
 sprites[ship_sprite].translate(0, jump);
-	
 if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1])) {
-	   
- sprites[ship_sprite].translate(0, -jump);
+sprites[ship_sprite].translate(0, -jump);
 
 The movement speed is determined by “void move_ship” function. For the collision part we have to add a negative ship speed. Once the ship_sprite will hit the border sprite the negative translation value is zeroing out the movement speed, so the character won't walk out from the scene.
 Jump function is just a faster translation value in simulation time.  For making that work in game, we need to create a force that will pull the character back to the “ground”.
