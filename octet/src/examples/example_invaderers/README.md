@@ -1,6 +1,6 @@
 CANDY CRUSHER DIPTYCH
 
-Who wants to eat apples, when you've got pockets filled with candy! Shoot the tasteless apples with your candies, but be careful, those bad apples will drop their seeds, and that can be deadly. If those seeds will hit, you will transform into a cat, then a ghost, after that it is just emptiness... and game over. But don't worry you can always transform back to human form by crushing some apples!
+Who wants to eat apples, when you've got pockets filled with candy! Shoot the tasteless apples with your candies, but be careful, those bad apples will drop their seeds, and that can be deadly. If those seeds will hit, you will transform into a cat, then a ghost, and after that it is just emptiness... and game over. But don't worry you can always transform back to human form by crushing some apples!
 
 https://youtu.be/SRGdJxN53cg
 
