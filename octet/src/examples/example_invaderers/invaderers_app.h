@@ -274,7 +274,7 @@ namespace octet {
       live_invaderers--;
       score++;
       if (live_invaderers == 4) {
-        invader_velocity *= 4;
+        invader_velocity *= 1;
       } 
 	  //else if (live_invaderers == 0) {
         //game_over = true;
@@ -614,6 +614,11 @@ namespace octet {
       if (game_over) {
         return;
       }
+
+	  if (live_invaderers == 0) {
+		  load_next_level();
+	  }
+
 	  gravity();
 
 	  pullup();
@@ -639,9 +644,7 @@ namespace octet {
 
     // this is called to draw the world
     void draw_world(int x, int y, int w, int h) {
-		if (live_invaderers == 0) {
-			load_next_level();
-		}
+		
 		//if (is_key_going_down(key_rmb)) {
 		//	load_next_level();
 		//}
@@ -722,10 +725,9 @@ namespace octet {
 	void load_next_level() {
 		++current_level;
 		if (current_level > MAX_NR_LVL) {
-			return;
 			game_over = true;
 			sprites[game_over_sprite].translate(-20, 0);
-			// TODO: show you win screen
+			return;
 		}
 
 		read_file();
@@ -737,6 +739,9 @@ namespace octet {
 			inv.init(invaderer, -1.5f + 0.66f*inv_formation[i].x, 2 - 0.5f*inv_formation[i].y, 0.25f, 0.25f);
 			inv_sprites.push_back(inv);
 		}
+
+		live_invaderers = inv_sprites.size();
+		invader_velocity = 0.06f;
 
 	}
 

@@ -1,4 +1,4 @@
-Candy crusher diptych
+CANDY CRUSHER DIPTYCH
 
 First, we make changes to player movements by adding options for upward and downward movement. The character’s movements are controlled by the following script. 
 if (is_key_going_down(key_up)) {
@@ -38,17 +38,19 @@ The new if statement for game over will be called when player sprite number will
 
 We use CSV (comma separated values) file to position enemies, and also add one more level into our scene. Since we are using CSV file we need to clear some of the code that we are going to initialize in our CSV function.
 
-From enum we need to delete number of rows and number columns, because that is determined by our CSV file / function.
-Number of bombs need to go as well, because (no idea)
+From enum we don’t need number of rows and number columns, because we are using data from aour CSC file that is dynamic.
+(Number of bombs need to go as well, because (no idea))
 Number of invaderers is no longer determined by rows times columns, because we are using the CSV file for that purpose.
 
-Delete
+Same for these
 	 invader_sprite
 	first_invader_sprite
 	last invader_sprite = first_invader_sprite + num_invadereres - 1
 
-Add 
-	sprite &invaderer = inv_sprites[j];
+
+
+We had to add dynamic array for storing invaders from CSV file. Since we don’t know how many invadederes there will be.
+	dynarray<sprite> inv_sprites;
 	live_invaderers = inv_sprites.size();
 	// draw all the sprites
       	for (int i = 0; i < inv_sprites.size(); ++i) {
@@ -71,7 +73,7 @@ And the other one looping over columns.
 	while (*e != 0 && *e != ',') {
 	++e;}
 
-WHAT IS THIS SHIIT?
+At this point b stores all the characeters for an element of the csv file, but we have to transformed into a number. We are suing atoi method to convert the char array to an int, further we are comparing the resulting number to see if it is the value 1 (which we have designated as being the identifier for creating an invaderer). If this is the case, then we store the position (column and row) of the element in the csv file in the inv_formation array as the x and y coordinates of the invaderer.
 	if (std::atoi(b) == 1) {
 	inv_position p;
 	p.x = j;
@@ -110,7 +112,4 @@ Fragment shader is following.
 	vec3 vColor = vec3(0.6, 0.1, 0.3) * (1-pos.y);
 	gl_FragColor = vec4(vColor, 1.0); } );
 	
-
- 
-
-
+I created a sprite for the background which is coloured with a custom shader. The vertex shader part is just passing through, not modifying the transformation of the vertices, but the fragment shader makes use of the y coordinate of the current pixel to create a gradient effect in the colouring. This is done by multiplying the RGB values of the final colour of the pixel by the normalized y value. We have to normalize the y axis values because colours for the fragment shader are in the range [0, 1].
